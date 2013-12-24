@@ -7,17 +7,35 @@
 //
 
 #import "AppDelegate.h"
-
+#import "DataBase.h"
 #import "ViewController.h"
+#import "TKHttpRequest.h"
+
+#define CUEE_CLICK @"curr_click"
 
 @implementation AppDelegate
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
     self.viewController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];
-    self.window.rootViewController = self.viewController;
+    UINavigationController *nav=[[UINavigationController alloc] initWithRootViewController:self.viewController];
+    
+    [DataBase clearOrderMenu];
+    [DataBase ShareDataBase];
+    
+    [TKHttpRequest ShareCache];
+    self.window.rootViewController = nav;
+    
+    NSUserDefaults * user1 = [NSUserDefaults standardUserDefaults];
+    [user1 removeObjectForKey:CUEE_CLICK];
+    [user1 synchronize];
+    
+    
+    if ([WebService ISIOS7])
+    {
+        application.statusBarHidden = YES;
+    }
+    
     [self.window makeKeyAndVisible];
     return YES;
 }
