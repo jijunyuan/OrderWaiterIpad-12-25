@@ -27,7 +27,7 @@
     }
     return self;
 }
-// test jjy - add 
+// test jjy - add
 - (void)viewDidLoad
 {
     [super viewDidLoad];
