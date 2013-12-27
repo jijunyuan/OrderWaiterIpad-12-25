@@ -27,26 +27,26 @@
     self.navTitle.text=@"订单搜索";
 
     //搜索栏
-    aSearchBar=[[UISearchBar alloc] initWithFrame:CGRectMake(0, 44, 1024-60, 44)];
+    aSearchBar=[[UISearchBar alloc] initWithFrame:CGRectMake(0, 44, 1024, 44)];
     aSearchBar.delegate=self;
     aSearchBar.placeholder=@"请输入订单号或者联系方式";
     [self.view addSubview:aSearchBar];
-    UIView *segment=[aSearchBar.subviews objectAtIndex:0];
-    [segment removeFromSuperview];
+//    UIView *segment=[aSearchBar.subviews objectAtIndex:0];
+//    [segment removeFromSuperview];
     aSearchBar.backgroundColor=[UIColor colorWithRed:229.0/255.0 green:229.0/255.0 blue:229.0/255.0 alpha:1.0];
     aSearchBar.tintColor=[UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
     aSearchBar.keyboardType=UIKeyboardTypeNumberPad;
-    UIButton *searBtn=[UIButton buttonWithType:UIButtonTypeCustom];
-    searBtn.frame=CGRectMake(1024-55, 51, 45, 29);
-    searBtn.backgroundColor=[UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
-    searBtn.layer.borderColor=[[UIColor grayColor] CGColor];
-    searBtn.layer.borderWidth=1;
-    searBtn.layer.cornerRadius=5.0;
-    [searBtn setTitle:@"搜索" forState:UIControlStateNormal];
-    searBtn.titleLabel.font=[UIFont systemFontOfSize:12.0];
-    searBtn.showsTouchWhenHighlighted=YES;
-    [searBtn addTarget:self action:@selector(searchBtn_Click) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:searBtn];
+//    UIButton *searBtn=[UIButton buttonWithType:UIButtonTypeCustom];
+//    searBtn.frame=CGRectMake(1024-55, 51, 45, 29);
+//    searBtn.backgroundColor=[UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+//    searBtn.layer.borderColor=[[UIColor grayColor] CGColor];
+//    searBtn.layer.borderWidth=1;
+//    searBtn.layer.cornerRadius=5.0;
+//    [searBtn setTitle:@"搜索" forState:UIControlStateNormal];
+//    searBtn.titleLabel.font=[UIFont systemFontOfSize:12.0];
+//    searBtn.showsTouchWhenHighlighted=YES;
+//    [searBtn addTarget:self action:@selector(searchBtn_Click) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:searBtn];
 }
 # pragma mark tableView
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

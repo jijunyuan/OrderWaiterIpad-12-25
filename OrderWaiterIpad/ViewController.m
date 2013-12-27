@@ -28,11 +28,11 @@
     dengluImage.image=[UIImage imageNamed:@"登录.png"];
     dengluImage.center=CGPointMake(self.view.bounds.size.height/2, self.view.bounds.size.width/2);
     [self.view addSubview:dengluImage];
-    nameTF=[[UITextField alloc] initWithFrame:CGRectMake(325, 288, 400, 30)];
+    nameTF=[[UITextField alloc] initWithFrame:CGRectMake(335, 288, 400, 30)];
     nameTF.borderStyle=UITextBorderStyleNone;
     nameTF.backgroundColor=[UIColor clearColor];
     [self.view addSubview:nameTF];
-    keyTF=[[UITextField alloc] initWithFrame:CGRectMake(325, 353, 400, 30)];
+    keyTF=[[UITextField alloc] initWithFrame:CGRectMake(335, 353, 400, 30)];
     keyTF.borderStyle=UITextBorderStyleNone;
     keyTF.secureTextEntry = YES;
     keyTF.backgroundColor=[UIColor clearColor];
@@ -163,6 +163,11 @@
         return NO;
         
     }
+    return YES;
+}
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [self log_in];
     return YES;
 }
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event

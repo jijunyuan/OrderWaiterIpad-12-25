@@ -7,18 +7,10 @@
 //
 
 #import "MainViewController.h"
-#import "UINavgationView.h"
-#import "ImageDishesView.h"
-#import "UIImageView+WebCache.h"
-#import "BottomView.h"
-#import "LeftBottomView.h"
-#import "RADataObject.h"
-#import "OrderSumbitView.h"
 #import "OrderListViewController.h"
 
 #define MARK_NOTIFICATION @"mark_notification"
 #define CUEE_CLICK @"curr_click"
-
 
 
 @interface MainViewController ()<ImageDishViewDelegate,BottomViewDelegate,OrderSumbitViewDelegate>
@@ -28,17 +20,11 @@
     int menuID;
     LeftBottomView * leftBottom;
 }
-@property (nonatomic,strong) NSMutableArray * myClassArr,* myProArr;
+
 @property (nonatomic,strong) NSMutableArray * dataArr;
-@property (nonatomic,strong) OrderSumbitView * orderSumbitView;
-@property (nonatomic,strong) NSMutableArray * clarrleftArr;
-@property (nonatomic,strong) NSMutableDictionary * remberDishNumber;
-@property (nonatomic,strong) NSMutableDictionary * remberMarkValueDic;
-@property (nonatomic,strong) NSMutableDictionary * remberDishStatusDic;
--(void)signUpClick;
+
 -(void)standMenu;
 -(void)selfReNameMenu;
--(void)addDishUI;
 -(void)addClassUI;
 -(void)markNotification:(NSNotification *)aNotification;
 -(void)sumbitOrder:(UIButton *)aButton;
@@ -51,6 +37,14 @@
 @synthesize orderSumbitView;
 @synthesize remberDishNumber;
 @synthesize remberDishStatusDic;
+@synthesize navView;
+@synthesize leftBottomView;
+@synthesize isFromAddMain;
+@synthesize orderId;
+@synthesize tableId;
+@synthesize peopleNum;
+@synthesize tableNum;
+@synthesize dataProArr;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -60,10 +54,28 @@
     }
     return self;
 }
-
+-(void)viewWillAppear:(BOOL)animated
+{
+    //[DataBase1 clearOrderMenu];
+    [DataBase clearOrderMenu];
+    [self.remberDishStatusDic removeAllObjects];
+    [self.remberDishNumber removeAllObjects];
+    [self.remberMarkValueDic removeAllObjects];
+    [self.clarrleftArr removeAllObjects];
+    [self reloadRATreeData];
+    [self addDishUI];
+    leftBottom.TF_peopleNum.text = @"";
+    leftBottom.TF_dishesNum.text = @"";
+    NSUserDefaults * user1 = [NSUserDefaults standardUserDefaults];
+    [user1 removeObjectForKey:CUEE_CLICK];
+    [user1 synchronize];
+    //[super viewWillAppear:animated];
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+   // [DataBase1 ShareDataBase];
     
     self.view.backgroundColor = [UIColor colorWithRed:242.0/255.0 green:242.0/255.0 blue:242.0/255.0 alpha:1.0];
     self.myProArr = [NSMutableArray arrayWithCapacity:0];
@@ -79,6 +91,7 @@
     
     //添加左下view
     leftBottom = [[LeftBottomView alloc] initWithFrame:CGRectMake(0, 558, 360, 210)];
+    self.leftBottomView = leftBottom;
     [leftBottom.sumbitBtn addTarget:self action:@selector(sumbitOrder:) forControlEvents:UIControlEventTouchUpInside];
     [leftBottom.orderManageBtn addTarget:self action:@selector(orderManage:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:leftBottom];
@@ -105,10 +118,11 @@
     //**********************
     nav = [[UINavgationView alloc] initWithFrame:CGRectMake(0, 0, 1024, 44)];
     [nav.signUpBtn addTarget:self action:@selector(signUpClick) forControlEvents:UIControlEventTouchUpInside];
+    self.navView = nav;
     [nav.selfBtn addTarget:self action:@selector(selfReNameMenu) forControlEvents:UIControlEventTouchUpInside];
     [nav.standBtn addTarget:self action:@selector(standMenu) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:nav];
-    
+    nav.mySarchBar.delegate=self;
     #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
     if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)])
     {
@@ -145,75 +159,122 @@
 -(void)sumbitMenu
 {
     NSString * proidStr = [DataBase selectAllProId];
-    NSString * copiesStr = [DataBase selectNumber];
-    //mark
-    NSMutableArray * arr_id = [DataBase selectAllArrayProId];
-    NSMutableString * str_mutable = [NSMutableString stringWithFormat:@""];
-    __block NSString * tempStr;
-    [arr_id enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL *stop) {
-        tempStr = [NSString stringWithFormat:@"%@",[self.remberMarkValueDic valueForKey:[NSString stringWithFormat:@"%@",obj]]];
-        if ([tempStr isEqualToString:@"(null)"])
+    if (proidStr.length>0)
+    {
+        NSString * copiesStr = [DataBase selectNumber];
+        //mark
+        NSMutableArray * arr_id = [DataBase selectAllArrayProId];
+        NSMutableString * str_mutable = [NSMutableString stringWithFormat:@""];
+        __block NSString * tempStr;
+        [arr_id enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL *stop) {
+            tempStr = [NSString stringWithFormat:@"%@",[self.remberMarkValueDic valueForKey:[NSString stringWithFormat:@"%@",obj]]];
+            if ([tempStr isEqualToString:@"(null)"])
+            {
+                [str_mutable appendString:@","];
+            }
+            else
+            {
+                [str_mutable appendFormat:@"%@,",tempStr];
+            }
+        }];
+        
+        //status format classid,1;classdid,0
+        __block NSMutableString * class_status = [NSMutableString stringWithFormat:@""];
+        NSArray * tempArrstatus = [self.remberDishStatusDic allKeys];
+        [tempArrstatus enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL *stop) {
+            [class_status appendFormat:@"%@,%@;",[DataBase SelectTypeIDByTypeName:obj],[self.remberDishStatusDic valueForKey:obj]];
+        }];
+        
+        NSString * statusSTr = [class_status substringToIndex:class_status.length-1];
+        
+       
+       // NSLog(@"status = %@===mark = %@,restid = %@,proidStr=%@,copiesStr=%@ tableid = %@,userid = %@,orderid = %@",statusSTr,[str_mutable substringToIndex:str_mutable.length-1],[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID],proidStr,copiesStr,self.leftBottomView.tableId,[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_USERID],self.orderId);
+       
+        ASIHTTPRequest * request;
+        if (!self.isFromAddMain)
         {
-            [str_mutable appendString:@","];
+             NSString * restid = [[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID];
+            NSString * mark1 = [str_mutable substringToIndex:str_mutable.length-1];
+            NSString * userId1 = [[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_USERID];
+            NSString * peopleNum1 = leftBottom.TF_peopleNum.text;
+            NSString * tableids = leftBottom.tableId;
+            
+           
+          request = [WebService AddOrderRestId:[restid intValue] tel:@"" tableId:tableids mark:mark1 proid:proidStr copies:copiesStr userID:[userId1 intValue] statue:statusSTr eatNumber:[peopleNum1 intValue]];
         }
         else
         {
-            [str_mutable appendFormat:@"%@,",tempStr];
+          //  NSString * tableids = leftBottom.tableId;
+             NSLog(@"=proidStr = %@=tableid = %@===OrderID=%@==mark = %@=copies = %@=",proidStr,self.tableId,self.orderId,[str_mutable substringToIndex:str_mutable.length-1],copiesStr);
+            request = [WebService AddishesRestID:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID] intValue] OrderID:[self.orderId intValue] proid:proidStr mark:[str_mutable substringToIndex:str_mutable.length-1] copies:copiesStr andTableId:[self.tableId intValue]];
         }
-    }];
-    
-    //status format classid,1;classdid,0
-    __block NSMutableString * class_status = [NSMutableString stringWithFormat:@""];
-    NSArray * tempArrstatus = [self.remberDishStatusDic allKeys];
-    NSLog(@"tempArrstatus = %@",tempArrstatus);
-    [tempArrstatus enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL *stop) {
-    [class_status appendFormat:@"%@,%@;",[DataBase SelectTypeIDByTypeName:obj],[self.remberDishStatusDic valueForKey:obj]];
-    }];
-    NSLog(@"class_status = %@===str_mutable = %@",class_status,str_mutable);
-    NSString * statusSTr = [class_status substringToIndex:class_status.length-1];
-    
-    ASIHTTPRequest * request = [WebService AddOrderRestId:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID] intValue] tel:@"" tableId:[leftBottom.tableId intValue] mark:[str_mutable substringToIndex:str_mutable.length-1] proid:proidStr copies:copiesStr userID:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_USERID] intValue] statue:statusSTr eatNumber:[leftBottom.TF_peopleNum.text intValue]];
-    [request startAsynchronous];
-    [request setStartedBlock:^{
-        [MyActivceView startAnimatedInView:self.view];
-    }];
-    NSMutableData * reciveData = [NSMutableData dataWithCapacity:0];
-    [request setDataReceivedBlock:^(NSData *data) {
-        [reciveData appendData:data];
-    }];
-    
-    __block UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"" message:@"提交成功！" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
-    
-    [request setCompletionBlock:^{
-        [MyActivceView stopAnimatedInView:self.view];
-        NSString * result = [NSString ConverStringfromData:reciveData name:@"SubmitOrder"];
-        NSLog(@"result = %@",[[NSString alloc] initWithData:reciveData encoding:4]);
-        if ([result isEqualToString:@"1"])
-        {
-            [alert show];
-            [DataBase clearOrderMenu];
-            [self.remberDishStatusDic removeAllObjects];
-            [self.remberDishNumber removeAllObjects];
-            [self.remberMarkValueDic removeAllObjects];
-            [self.clarrleftArr removeAllObjects];
-            [self reloadRATreeData];
-            [self addDishUI];
-            leftBottom.TF_peopleNum.text = @"";
-            leftBottom.TF_dishesNum.text = @"";
-            NSUserDefaults * user1 = [NSUserDefaults standardUserDefaults];
-            [user1 removeObjectForKey:CUEE_CLICK];
-            [user1 synchronize];
-        }
-        else
-        {
-            [MyAlert ShowAlertMessage:@"添加失败！" title:@"提示"];
-        }
-    }];
-    [request setFailedBlock:^{
-        [MyActivceView stopAnimatedInView:self.view];
-        [MyAlert ShowAlertMessage:@"网络不给力，请重试！" title:@"提示"];
-    }];
-
+        [request startAsynchronous];
+        [request setStartedBlock:^{
+            [MyActivceView startAnimatedInView:self.view];
+        }];
+        NSMutableData * reciveData = [NSMutableData dataWithCapacity:0];
+        [request setDataReceivedBlock:^(NSData *data) {
+            [reciveData appendData:data];
+        }];
+        
+       
+        
+        [request setCompletionBlock:^{
+            [MyActivceView stopAnimatedInView:self.view];
+            NSString * result;
+            if (self.isFromAddMain)
+            {
+                result = [NSString ConverStringfromData:reciveData name:@"addOrderinfo"];
+            }
+            else
+            {
+              result = [NSString ConverStringfromData:reciveData name:@"SubmitOrder"];
+            }
+            NSLog(@"result = %@",[[NSString alloc] initWithData:reciveData encoding:4]);
+            if ([result isEqualToString:@"1"])
+            {
+                UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"" message:@"提交成功！" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+                [alert show];
+                [DataBase clearOrderMenu];
+                [self.remberDishStatusDic removeAllObjects];
+                [self.remberDishNumber removeAllObjects];
+                [self.remberMarkValueDic removeAllObjects];
+                [self.clarrleftArr removeAllObjects];
+                [self reloadRATreeData];
+                [self addDishUI];
+                leftBottom.TF_peopleNum.text = @"";
+                leftBottom.TF_dishesNum.text = @"";
+                NSUserDefaults * user1 = [NSUserDefaults standardUserDefaults];
+                [user1 removeObjectForKey:CUEE_CLICK];
+                [user1 synchronize];
+                
+                if (self.isFromAddMain)
+                {
+                    for (UIViewController * controller1 in self.navigationController.viewControllers)
+                    {
+                        if ([controller1 isKindOfClass:[OrderListViewController class]])
+                        {
+                            OrderListViewController * orderList = (OrderListViewController *)controller1;
+                            [self.navigationController popToViewController:orderList animated:YES];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                [MyAlert ShowAlertMessage:@"添加失败！" title:@"提示"];
+            }
+        }];
+        [request setFailedBlock:^{
+            [MyActivceView stopAnimatedInView:self.view];
+            [MyAlert ShowAlertMessage:@"网络不给力，请重试！" title:@"提示"];
+        }];
+ 
+    }
+   else
+   {
+       [MyAlert ShowAlertMessage:@"亲，您还没有点菜哦！" title:@"提示"];
+   }
 }
 #pragma mark - 订单管理
 -(void)orderManage:(UIButton *)aButton
@@ -389,10 +450,18 @@
     if (aDotNumber>0)
     {
         [DataBase UpdateDotNumber:[aChangeDishView.productId intValue] currDotNumber:aDotNumber];
+//        if (self.isFromAddMain)
+//        {
+//            [DataBase1 UpdateDotNumber:[aChangeDishView.productId intValue] currDotNumber:aDotNumber];
+//        }
     }
     else
     {
         [DataBase deleteProID:[aChangeDishView.productId intValue]];
+//        if (self.isFromAddMain)
+//        {
+//             [DataBase1 deleteProID:[aChangeDishView.productId intValue]];
+//        }
     }
     [self.remberDishNumber setValue:[NSString stringWithFormat:@"%g",aDotNumber] forKey:[NSString stringWithFormat:@"%@",aChangeDishView.productId]];
     [self reloadReleaseRATreeData];
@@ -436,7 +505,11 @@
         }
         
         [DataBase insertProID:[[dicTemp valueForKey:@"ProID"] intValue] menuid:menuID proName:[dicTemp valueForKey:@"ProName"] price:disCount image:[dicTemp valueForKey:@"ProductImg"] andNumber:1.0 typeID:[[dicTemp valueForKey:@"TypeId"] intValue] typeName:[dicTemp valueForKey:@"TypeName"]];
-        }
+//        if (self.isFromAddMain)
+//        {
+//          [DataBase1 insertProID:[[dicTemp valueForKey:@"ProID"] intValue] menuid:menuID proName:[dicTemp valueForKey:@"ProName"] price:disCount image:[dicTemp valueForKey:@"ProductImg"] andNumber:1.0 typeID:[[dicTemp valueForKey:@"TypeId"] intValue] typeName:[dicTemp valueForKey:@"TypeName"]];
+//        }
+    }
     else
     {
         [DataBase UpdateDotNumber:[aChangeDishView.productId intValue] currDotNumber:aDotNumber];
@@ -615,6 +688,7 @@
         RADataObject * firstMode = [RADataObject dataObjectWithName:[[dicTemp1 valueForKey:@"TypeName"] stringByAppendingFormat:@",%@",strStsus] children:classGroubArr];
         [fristArr addObject:firstMode];
     }
+    NSLog(@"first++++++++ = %@",fristArr);
     self.orderSumbitView.dataArr = fristArr;
     [self.orderSumbitView.raTreeView reloadData];
     
@@ -667,14 +741,119 @@
 #pragma mark - 标餐
 -(void)standMenu
 {
-
+    StandardViewController *standVC=[[StandardViewController alloc] init];
+    [self.navigationController pushViewController:standVC animated:YES];
 }
 #pragma mark - 自定义菜
 -(void)selfReNameMenu
 {
- 
+    [nav.mySarchBar resignFirstResponder];
+    //UI
+    backImage=[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 1024, 768)];
+    backImage.backgroundColor=[[UIColor blackColor] colorWithAlphaComponent:0.6];
+    backImage.alpha=0;
+    backImage.userInteractionEnabled=YES;
+    [self.view addSubview:backImage];
+    customView=[[UIView alloc] initWithFrame:CGRectMake(1024/2-600/2, 768, 600, 400)];
+    customView.backgroundColor=[UIColor colorWithRed:216.0/255.0 green:216.0/255.0 blue:216.0/255.0 alpha:1.0];
+    customView.layer.borderColor=[UIColor grayColor].CGColor;
+    customView.layer.borderWidth=0.5;
+    customView.layer.cornerRadius =5.0;
+    [self.view addSubview:customView];
+    [UIView animateWithDuration:.3 animations:^{
+        customView.frame=CGRectMake(1024/2-600/2, 768/2-400/2, 600, 400);
+        backImage.alpha=1;
+    }];
+    UIView *navView1=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 600, 44)];
+    navView1.backgroundColor=[UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+    navView1.layer.borderColor=[UIColor grayColor].CGColor;
+    navView1.layer.borderWidth=0.5;
+    navView1.layer.cornerRadius =3.0;
+    [customView addSubview:navView1];
+    UILabel *TitleLab=[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 44)];
+    TitleLab.backgroundColor=[UIColor clearColor];
+    TitleLab.center=navView1.center;
+    TitleLab.text=@"添加自定义菜";
+    TitleLab.textColor=[UIColor whiteColor];
+    TitleLab.textAlignment=NSTextAlignmentCenter;
+    [navView1 addSubview:TitleLab];
+    UILabel *caimingLab=[[UILabel alloc] initWithFrame:CGRectMake(20, 70, 100, 44)];
+    caimingLab.text=@"菜名:";
+    caimingLab.backgroundColor=[UIColor clearColor];
+    [customView addSubview:caimingLab];
+    UILabel *caijiaLab=[[UILabel alloc] initWithFrame:CGRectMake(20, 150, 100, 44)];
+    caijiaLab.text=@"菜价:";
+    caijiaLab.backgroundColor=[UIColor clearColor];
+    [customView addSubview:caijiaLab];
+    UIView *left2=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
+    nameTF=[[UITextField alloc] initWithFrame:CGRectMake(20, 110, 500, 30)];
+    nameTF.borderStyle=UITextBorderStyleRoundedRect;
+    nameTF.delegate=self;
+    nameTF.leftView=left2;
+    UIImageView *leftImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mingcheng.png"]];
+    leftImage2.frame=CGRectMake(0, 0, 25, 25);
+    [left2 addSubview:leftImage2];
+    nameTF.leftViewMode = UITextFieldViewModeAlways;
+    nameTF.placeholder=@"请输入菜品名称";
+    [customView addSubview:nameTF];
+    priceTF=[[UITextField alloc] initWithFrame:CGRectMake(20, 190, 500, 30)];
+    priceTF.borderStyle=UITextBorderStyleRoundedRect;
+    priceTF.delegate=self;
+    UIView *left=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
+    priceTF.leftView=left;
+    UIImageView *leftImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"jiaqian.png"]];
+    leftImage.frame=CGRectMake(0, 0, 25, 25);
+    [left addSubview:leftImage];
+    priceTF.leftViewMode = UITextFieldViewModeAlways;
+    priceTF.placeholder=@"请输入菜品价格";
+    [customView addSubview:priceTF];
+    cancelBtn=[UIButton buttonWithType:UIButtonTypeCustom];
+    cancelBtn.backgroundColor=[UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+    cancelBtn.frame=CGRectMake(30, 330, 250, 40);
+    [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+    [cancelBtn addTarget:self action:@selector(cancelbtn_click) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:cancelBtn];
+    sureBtn=[UIButton buttonWithType:UIButtonTypeCustom];
+    sureBtn.backgroundColor=[UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+    sureBtn.frame=CGRectMake(310, 330, 250, 40);
+    [sureBtn setTitle:@"确定" forState:UIControlStateNormal];
+    [sureBtn addTarget:self action:@selector(surebtn_click) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:sureBtn];
+    
+    titleAry=[[NSArray alloc] initWithObjects:@"热菜",@"凉菜",@"酒水",@"果盘",@"烤鸭",@"面点",@"其他", nil];
+    typeIDAry=[[NSArray alloc] initWithObjects:@"10",@"11",@"12",@"13",@"19",@"18",@"14", nil];
+    btnAry=[[NSMutableArray alloc] init];
+    for (int i = 0; i < 7; i++)
+    {
+        UILabel *lab = [[UILabel alloc] initWithFrame:CGRectMake(40+80*i, 270, 80, 20)];
+        lab.font = [UIFont fontWithName:@"Arial" size:14];
+        lab.text = [titleAry objectAtIndex:i];
+        lab.backgroundColor = [UIColor clearColor];
+        [customView addSubview:lab];
+        
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        btn.frame = CGRectMake(10+80*i, 267, 110, 30);
+        btn.tag = i+1;
+        [btn addTarget:self action:@selector(selectType:) forControlEvents:UIControlEventTouchUpInside];
+        [btn setImage:[UIImage imageNamed:@"no click.png"] forState:UIControlStateNormal];
+        [btn setImageEdgeInsets:UIEdgeInsetsMake(6, 9, 9, 85)];
+        [btnAry addObject:btn];
+        [customView addSubview:btn];
+        typeID=1;
+        if (btn.tag == 1)
+        {
+            //[self selectType:btn];
+            [btn setImage:[UIImage imageNamed:@"on click.png"] forState:UIControlStateNormal];
+        }
+        
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
-
+//搜索
+-(void)searchBtn_Click
+{
+    [self searchRequest];
+}
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
 -(BOOL)prefersStatusBarHidden
 {
@@ -685,18 +864,95 @@
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [nav.mySarchBar resignFirstResponder];
+    [nameTF resignFirstResponder];
+    [priceTF resignFirstResponder];
 }
-
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    [UIView animateWithDuration:.3 animations:^{
+        customView.frame=CGRectMake(1024/2-600/2, 768/2-400/2, 600, 400);
+    }];
+    
+}
+# pragma mark - --- searchbar delegate
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+{
+    NSLog(@"searchBarShouldBeginEditing");
+    return YES;
+}
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchBtn_Click];
+    [searchBar resignFirstResponder];
+}
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
+    [searchBar resignFirstResponder];
+}
+#pragma mark ---textField
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    cancelBtn.userInteractionEnabled=NO;
+    sureBtn.userInteractionEnabled=NO;
+    [UIView animateWithDuration:.3 animations:^{
+        customView.frame=CGRectMake(1024/2-600/2, 0, 600, 400);
+    }];
+}
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    cancelBtn.userInteractionEnabled=YES;
+    sureBtn.userInteractionEnabled=YES;
+}
+-(void)cancelbtn_click
+{
+    [UIView animateWithDuration:.3 animations:^{
+        customView.frame=CGRectMake(1024/2-600/2, 768, 600, 400);
+        backImage.alpha=0;
+    } completion:^(BOOL finished) {
+        [customView removeFromSuperview];
+        [backImage removeFromSuperview];
+    }];
+}
+-(void)surebtn_click
+{
+    if ([nameTF.text isEqualToString:@""]||[priceTF.text isEqualToString:@""])
+    {
+        [MyAlert ShowAlertMessage:@"请输入菜品名称和价格" title:@"温馨提醒"];
+    }
+    else
+    {
+        NSLog(@"0000");
+        [self customRequest];
+    }
+    
+}
+- (void)selectType:(id)sender
+{
+    for (UIButton *btn  in btnAry)
+    {
+        [btn setImage:[UIImage imageNamed:@"no click.png"] forState:UIControlStateNormal];
+    }
+    UIButton *btn = (UIButton*)sender;
+    [btn setImage:[UIImage imageNamed:@"on click.png"] forState:UIControlStateNormal];
+    typeID=btn.tag;
+}
 #pragma mark - OrderSumbitView delegate
 -(void)OrderSumbitView:(OrderSumbitView *)aOrderView andLeftDotNumber:(double)aDotNumber andProid:(NSString *)aProId andThirdCell:(ThirdModeCell *)aThirdCell
 {
     if (aDotNumber>0)
     {
         [DataBase UpdateDotNumber:[aProId intValue] currDotNumber:aDotNumber];
+//        if (self.isFromAddMain)
+//        {
+//           [DataBase1 UpdateDotNumber:[aProId intValue] currDotNumber:aDotNumber];
+//        }
     }
     else
     {
         [DataBase deleteProID:[aProId intValue]];
+//        if (self.isFromAddMain)
+//        {
+//           [DataBase1 deleteProID:[aProId intValue]];
+//        }
     }
     [self.remberDishNumber setValue:[NSString stringWithFormat:@"%g",aDotNumber] forKey:[NSString stringWithFormat:@"%@",aProId]];
     [self reloadReleaseRATreeData];
@@ -707,6 +963,12 @@
 {
       NSLog(@"rightdot = %g,id = %@",aDotNumber,aProId);
     [DataBase UpdateDotNumber:[aProId intValue] currDotNumber:aDotNumber];
+    
+    if (self.isFromAddMain)
+    {
+       [DataBase UpdateDotNumber:[aProId intValue] currDotNumber:aDotNumber];
+    }
+    
     [self.remberDishNumber setValue:[NSString stringWithFormat:@"%g",aDotNumber] forKey:[NSString stringWithFormat:@"%@",aProId]];
     [self reloadRATreeData];
     [self addDishUI];
@@ -735,6 +997,96 @@
     }
     [self.remberDishStatusDic setValue:str1 forKey:aName];
 }
+#pragma mark --request
+-(void)customRequest
+{
+    [MyActivceView startAnimatedInView:self.view];
+    ASIHTTPRequest *request=[TKHttpRequest RequestTKUrl: @"http://192.168.1.100:8082/luban/om_interface/product.asmx?op=AddCustomProduct"];
+    NSString *postStr=[NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?>\
+                       <soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\
+                       <soap:Body>\
+                       <AddCustomProduct xmlns=\"http://tempuri.org/\">\
+                       <title>%@</title>\
+                       <typeid>%d</typeid>\
+                       <prices>%@</prices>\
+                       </AddCustomProduct>\
+                       </soap:Body>\
+                       </soap:Envelope>",nameTF.text,[[typeIDAry objectAtIndex:typeID-1] intValue],priceTF.text];
+    request.tag=11111;
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
+    [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
+    [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
+    [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/AddCustomProduct"];
+    [request setPostBody:(NSMutableData *)[postStr dataUsingEncoding:4]];
+    request.delegate=self;
+    [request startAsynchronous];
+    
+}
+
+-(void)searchRequest
+{
+    [MyActivceView startAnimatedInView:self.view];
+    ASIHTTPRequest *request=[TKHttpRequest RequestTKUrl: @"http://192.168.1.100:8082/luban/om_interface/product.asmx?op=ProductListByPy"];
+    NSString *postStr=[NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?>\
+                       <soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\
+                       <soap:Body>\
+                       <ProductListByPy xmlns=\"http://tempuri.org/\">\
+                       <keys>%@</keys>\
+                       </ProductListByPy>\
+                       </soap:Body>\
+                       </soap:Envelope>",nav.mySarchBar.text];
+    request.tag=22222;
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
+    [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
+    [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
+    [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/ProductListByPy"];
+    [request setPostBody:(NSMutableData *)[postStr dataUsingEncoding:4]];
+    request.delegate=self;
+    [request startAsynchronous];
+    
+}
+- (void)requestStarted:(ASIHTTPRequest *)request
+{
+}
+-(void)requestFinished:(ASIHTTPRequest *)request
+{
+    [MyActivceView stopAnimatedInView:self.view];
+    if (request.tag==11111)
+    {
+        NSString *resultStr=[NSString ConverStringfromData:request.responseData name:@"AddCustomProduct"];
+        if (resultStr==nil||[resultStr isEqualToString:@"0"])
+        {
+            [MyAlert ShowAlertMessage:@"添加菜品失败" title:@"温馨提醒"];
+        }
+        else
+        {
+            UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"温馨提醒" message:@"添加成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+            [alert show];
+        }
+    }
+    if (request.tag==22222)
+    {
+        NSArray *resultAry=[NSString ConverfromData:request.responseData name:@"ProductListByPy"];
+        [self.myProArr removeAllObjects];
+        self.myProArr=[NSMutableArray arrayWithArray:resultAry];
+        [self addDishUI];
+    }
+    
+    
+}
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    [MyActivceView stopAnimatedInView:self.view];
+    [MyAlert ShowAlertMessage:@"网速不给力啊!" title:@"温馨提醒"];
+}
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex==0)
+    {
+        [self cancelbtn_click];
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

@@ -63,7 +63,7 @@
         }
         else
         {
-            [rightBtn setImage:[UIImage imageNamed:@"greyA.png"] forState:UIControlStateNormal];
+            [rightBtn setImage:[UIImage imageNamed:@"grayA"] forState:UIControlStateNormal];
         }
         
         rightBtn.frame = CGRectMake(96, 0, 40, 40);
@@ -134,7 +134,7 @@
         }
         else
         {
-            [rightBtn setImage:[UIImage imageNamed:@"greyA.png"] forState:UIControlStateNormal];
+            [rightBtn setImage:[UIImage imageNamed:@"grayA.png"] forState:UIControlStateNormal];
         }
         
         rightBtn.frame = CGRectMake(96, 0, 40, 40);

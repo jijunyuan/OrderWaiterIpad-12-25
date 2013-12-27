@@ -21,8 +21,8 @@
 +(ASIHTTPRequest *)GetDishesListByOrderId:(int)aOrderId;
 +(ASIHTTPRequest *)CheckOrderByOrderId:(int)aOrderId andTableId:(int)aTableId waiteId:(int)aWaiterId;
 +(ASIHTTPRequest *)GetTableList:(int)aRestId;
-+(ASIHTTPRequest *)AddOrderRestId:(int)aRestId tel:(NSString *)aTel tableId:(int)aTableId mark:(NSString *)aMark proid:(NSString *)aProId copies:(NSString *)aCopies userID:(int)aUserID statue:(NSString *)aStatue eatNumber:(int)aNumber;
++(ASIHTTPRequest *)AddOrderRestId:(int)aRestId tel:(NSString *)aTel tableId:(NSString *)aTableId mark:(NSString *)aMark proid:(NSString *)aProId copies:(NSString *)aCopies userID:(int)aUserID statue:(NSString *)aStatue eatNumber:(int)aNumber;
 +(ASIHTTPRequest *)EditOrderId:(int)aOrderId idStr:(NSString *)aIdStr copies:(NSString *)aCopies;
 +(ASIHTTPRequest *)EditTableOrderId:(int)aOrderId tableId:(int)aTableId oldTableID:(int)aOldTableId;
-+(ASIHTTPRequest *)AddishesRestID:(int)aRestID OrderID:(int)aOrderId proid:(NSString *)aProid mark:(NSString *)aMark copies:(NSString *)aCopies;
++(ASIHTTPRequest *)AddishesRestID:(int)aRestID OrderID:(int)aOrderId proid:(NSString *)aProid mark:(NSString *)aMark copies:(NSString *)aCopies andTableId:(int)aTableId;
 @end

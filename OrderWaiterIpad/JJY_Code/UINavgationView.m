@@ -12,6 +12,7 @@
 @synthesize signUpBtn;
 @synthesize mySarchBar;
 @synthesize selfBtn;
+@synthesize lineView;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -53,12 +54,13 @@
                 }
             }
         }
-        searchBar.placeholder = @"请输入关键字";
+        searchBar.placeholder = @"请输入关键字的首字母";
         self.mySarchBar = searchBar;
         [self addSubview:searchBar];
         
         //加标餐左右边线
         UIImageView * eatleftLine = [[UIImageView alloc] initWithFrame:CGRectMake(800, 0, 2, 44)];
+        self.lineView = eatleftLine;
         eatleftLine.image = [UIImage imageNamed:@"标题线.png"];
         [self addSubview:eatleftLine];
         
@@ -89,7 +91,7 @@
         //添加自定义按钮
         UIButton * selfBtn1 = [UIButton buttonWithType:buttonType];
         self.selfBtn = selfBtn1;
-        [selfBtn1 setTitle:@"自定义菜单" forState:UIControlStateNormal];
+        [selfBtn1 setTitle:@"自定义菜" forState:UIControlStateNormal];
         [selfBtn1.titleLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:20]];
         [selfBtn1 setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         selfBtn1.frame = CGRectMake(896, 2, 130, 40);

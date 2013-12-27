@@ -13,12 +13,20 @@
 #import "DishesCustomCell.h"
 #import "Add_dishesViewController.h"
 #import "Detail_DishesViewController.h"
-@interface Checked_dishesViewController ()
+#import "AddMainViewController.h"
 
+
+
+@interface Checked_dishesViewController ()
+@property (nonatomic,strong) NSMutableDictionary * dataStatusDic;
+@property (nonatomic,strong) NSMutableDictionary * markDic;
 @end
 
 @implementation Checked_dishesViewController
 @synthesize checkedAry,allKeysAry,dishAry,dishesMutAry;
+@synthesize dataStatusDic,markDic;
+
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -32,6 +40,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    NSLog(@"self.checkedAry = %@",self.checkedAry);
+    self.dataStatusDic = [NSMutableDictionary dictionaryWithCapacity:0];
+    
     self.navTitle.text=[self.checkedAry valueForKey:@"tel"];
     UILabel *checkLab=[[UILabel alloc] initWithFrame:CGRectMake(860, 0, 50, 44)];
     checkLab.backgroundColor=[UIColor clearColor];
@@ -127,7 +139,7 @@
     [tableNumBtn addTarget:self action:@selector(tableNumBtn_click:) forControlEvents:UIControlEventTouchUpInside];
     tableNumBtn.tag=1111;
     [self.view addSubview:tableNumBtn];
-    UIButton *addBtn=[UIButton buttonWithType:UIButtonTypeRoundedRect];
+    UIButton *addBtn=[UIButton buttonWithType:UIButtonTypeCustom];
     addBtn.frame=CGRectMake(780, 650, 161, 61);
     [addBtn addTarget:self action:@selector(addBtn_Click) forControlEvents:UIControlEventTouchUpInside];
     [addBtn setImage:[UIImage imageNamed:@"加菜.png"] forState:UIControlStateNormal];
@@ -163,7 +175,7 @@
 //                       </soap:Body>\
 //                       </soap:Envelope>",[[self.checkedAry valueForKey:@"id"] intValue]];
 //    NSLog(@"-===  %d",[[self.checkedAry valueForKey:@"id"] intValue]);
-//    [request addRequestHeader:@"Host" value:@"dmd.tiankong360.com"];
+//    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
 //    [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
 //    [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
 //    request.tag=22;
@@ -171,9 +183,23 @@
 //    [request setPostBody:(NSMutableData *)[postStr dataUsingEncoding:4]];
 //    request.delegate=self;
 //    [request startAsynchronous];
-    Add_dishesViewController *addVC=[[Add_dishesViewController alloc] initWithNibName:@"Detail_DishesViewController" bundle:nil];
-    addVC.orderID=[[self.checkedAry valueForKey:@"Id"] intValue];
-    [self.navigationController pushViewController:addVC animated:YES];
+//    Add_dishesViewController *addVC=[[Add_dishesViewController alloc] initWithNibName:@"Detail_DishesViewController" bundle:nil];
+//    addVC.orderID=[[self.checkedAry valueForKey:@"Id"] intValue];
+//    [self.navigationController pushViewController:addVC animated:YES];
+    
+    [DataBase clearOrderMenu];
+    
+    AddMainViewController * addMain = [[AddMainViewController alloc] init];
+  //  addMain.dataProArr = (NSMutableDictionary *)self.dishAry;
+    addMain.orderId = [self.checkedAry valueForKey:@"Id"];
+    addMain.tableNum = [self.checkedAry valueForKey:@"TableNum"];
+    
+    NSString * tableidStr = [NSString stringWithFormat:@"%@",[self.checkedAry valueForKey:@"TableId"]];
+    addMain.tableId = tableidStr;
+    addMain.peopleNum = [self.checkedAry valueForKey:@"peopleNum"];
+  //  addMain.dataStausDic = self.dataStatusDic;
+   // NSLog(@"*********%@",self.dishAry);
+    [self.navigationController pushViewController:addMain animated:YES];
 }
 -(void)checkRequest
 {
@@ -184,11 +210,12 @@
                        <soap:Body>\
                        <getOrderInfo xmlns=\"http://tempuri.org/\">\
                        <OrderId>%d</OrderId>\
+                       <TableId>%d</TableId>\
                        </getOrderInfo>\
                        </soap:Body>\
-                       </soap:Envelope>",[[self.checkedAry valueForKey:@"Id"] intValue]];
+                       </soap:Envelope>",[[self.checkedAry valueForKey:@"Id"] intValue],[[self.checkedAry valueForKey:@"TableId"] intValue]];
     NSLog(@"id = %@",[self.checkedAry valueForKey:@"Id"]);
-    [request addRequestHeader:@"Host" value:@"dmd.tiankong360.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     request.tag=22;
@@ -212,7 +239,7 @@
                        </auditingOrder>\
                        </soap:Body>\
                        </soap:Envelope>",i,[[self.checkedAry valueForKey:@"Id"] intValue]];
-    [request addRequestHeader:@"Host" value:@"dmd.tiankong360.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     request.tag=00;
@@ -242,7 +269,7 @@
                            </soap:Body>\
                            </soap:Envelope>",[[self.checkedAry valueForKey:@"Id"] intValue],[table_id intValue],[[self.checkedAry valueForKey:@"TableNum"] intValue]];
         NSLog(@"%d %d %d",[[self.checkedAry valueForKey:@"Id"] intValue],[table_id intValue],[[self.checkedAry valueForKey:@"TableId"] intValue]);
-        [request addRequestHeader:@"Host" value:@"dmd.tiankong360.com"];
+        [request addRequestHeader:@"Host" value:@"192.168.1.100"];
         [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
         [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
         request.tag=11;
@@ -259,6 +286,7 @@
 -(void)requestFinished:(ASIHTTPRequest *)request
 {
     [MyActivceView stopAnimatedInView:self.view];
+    NSLog(@"====%@",[NSString stringWithFormat:@"%@",request.responseString]);
     if (request.tag==11)
     {
         NSString *resultStr=[NSString ConverStringfromData:request.responseData name:@"EditTableNum"];
@@ -288,8 +316,13 @@
     if (request.tag==22)
     {
        NSArray *resultAry=[NSString ConverfromData:request.responseData name:@"getOrderInfo"];
+        
+      
         self.dishAry=resultAry;
         NSDictionary *resultDic=(NSDictionary *)[NSString ConverfromData:request.responseData name:@"getOrderInfo"];
+        
+     //   NSLog(@"resultARy = %@ \n  resultDic = %@",self.dishAry,resultDic);
+        
         self.allKeysAry=[resultDic allKeys];
         ascrollview.contentSize=CGSizeMake(1024/4*[self.allKeysAry count]+1, 44);
         if (self.allKeysAry.count>0)
@@ -327,8 +360,9 @@
             NSMutableArray *mutAy=[self.dishAry valueForKey:[allKeysAry objectAtIndex:i]];
             [allDishesAry addObject:mutAy];
             NSString *s=[[mutAy objectAtIndex:0] valueForKey:@"Status"];
+            
             aSwitch.on=[s intValue];
-
+            //[self.dataStatusDic setValue:[NSString stringWithFormat:@"%d",[s intValue]] forKey:[allKeysAry objectAtIndex:i]];
         }
         double sum=0;
        // int  total=0;
@@ -351,8 +385,16 @@
             s=[NSString stringWithFormat:@"%d个%@,",total,dishesStr];
             [totalMutStr appendString:s];
         }
-        NSLog(@"%@",[totalMutStr substringToIndex:totalMutStr.length-1]);
-        totalLab2.text=[totalMutStr substringToIndex:totalMutStr.length-1];
+       // NSLog(@"%@",[totalMutStr substringToIndex:totalMutStr.length-1]);
+        if (totalLab2.text.length>1)
+        {
+             totalLab2.text=[totalMutStr substringToIndex:totalMutStr.length-1];
+        }
+        else
+        {
+           totalLab2.text=@"";
+        }
+       
         NSLog(@"------------ %g",sum);
         totalpriceLab2.text=[NSString stringWithFormat:@"共%g元",sum];
         if (self.allKeysAry.count >0)
@@ -406,7 +448,7 @@
         }
     }
     cell.selectionStyle=UITableViewCellSelectionStyleNone;
-    NSLog(@"self %@",self.dishesMutAry);
+   // NSLog(@"self %@",self.dishesMutAry);
     cell.nameLab.text=[NSString stringWithFormat:@"◎%@",[[self.dishesMutAry objectAtIndex:indexPath.row] valueForKey:@"ProName"]];
     cell.priceLab.text=[NSString stringWithFormat:@"¥%@",[[self.dishesMutAry objectAtIndex:indexPath.row] valueForKey:@"Price"]];
     cell.copiesLab.text=[NSString stringWithFormat:@"点%@份",[[self.dishesMutAry objectAtIndex:indexPath.row] valueForKey:@"Copies"]];
@@ -448,6 +490,10 @@
           shouldDismissVisiblePopover:(FPPopoverController*)visiblePopoverController
 {
     [visiblePopoverController dismissPopoverAnimated:YES];
+}
+-(void)backBtn_click
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 - (void)didReceiveMemoryWarning
 {

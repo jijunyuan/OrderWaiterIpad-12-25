@@ -24,13 +24,13 @@
             <rect key="frame" x="0.0" y="0.0" width="768" height="768"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="4">
-                    <rect key="frame" x="0.0" y="88" width="1024" height="510"/>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="4">
+                    <rect key="frame" x="0.0" y="44" width="1024" height="554"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="1024" id="12"/>
-                        <constraint firstAttribute="height" constant="510" id="259"/>
+                        <constraint firstAttribute="height" constant="554" id="259"/>
                     </constraints>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="14"/>
@@ -163,7 +163,7 @@
                 <constraint firstItem="117" firstAttribute="leading" secondItem="113" secondAttribute="leading" id="245"/>
                 <constraint firstAttribute="bottom" secondItem="117" secondAttribute="bottom" constant="43" id="246"/>
                 <constraint firstAttribute="bottom" secondItem="23" secondAttribute="bottom" constant="57" id="248"/>
-                <constraint firstItem="4" firstAttribute="top" secondItem="2" secondAttribute="top" constant="88" id="258"/>
+                <constraint firstItem="4" firstAttribute="top" secondItem="2" secondAttribute="top" constant="44" id="258"/>
                 <constraint firstItem="113" firstAttribute="trailing" secondItem="117" secondAttribute="trailing" id="269"/>
                 <constraint firstItem="260" firstAttribute="bottom" secondItem="2" secondAttribute="bottom" id="274"/>
                 <constraint firstItem="260" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="285" id="278"/>

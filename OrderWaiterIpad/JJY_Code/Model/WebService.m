@@ -36,7 +36,7 @@
                        </GetList>\
                        </soap:Body>\
                        </soap:Envelope>",aResultID];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/GetList"];
@@ -56,7 +56,7 @@
                        </ProductList>\
                        </soap:Body>\
                        </soap:Envelope>",[aClassId intValue]];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/ProductList"];
@@ -77,7 +77,7 @@
                        </WaiterLogin>\
                        </soap:Body>\
                        </soap:Envelope>",aUserName,aPwd];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/WaiterLogin"];
@@ -99,7 +99,7 @@
                        </GetOrderList>\
                        </soap:Body>\
                        </soap:Envelope>",aRestId,aWaiterId,aStatus];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/GetOrderList"];
@@ -119,7 +119,7 @@
                        </GetOrderForSearch>\
                        </soap:Body>\
                        </soap:Envelope>",aRestId,aKey];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/GetOrderForSearch"];
@@ -139,7 +139,7 @@
                        </GetProductList>\
                        </soap:Body>\
                        </soap:Envelope>",aOrderId];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/GetProductList"];
@@ -160,7 +160,7 @@
                        </AuditOrderInfo>\
                        </soap:Body>\
                        </soap:Envelope>",aOrderId,aTableId,aWaiterId];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/AuditOrderInfo"];
@@ -179,7 +179,7 @@
                        </GetTableList>\
                        </soap:Body>\
                        </soap:Envelope>",aRestId];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/GetTableList"];
@@ -188,7 +188,7 @@
 }
 
 #pragma mark - 添加订单
-+(ASIHTTPRequest *)AddOrderRestId:(int)aRestId tel:(NSString *)aTel tableId:(int)aTableId mark:(NSString *)aMark proid:(NSString *)aProId copies:(NSString *)aCopies userID:(int)aUserID statue:(NSString *)aStatue eatNumber:(int)aNumber
++(ASIHTTPRequest *)AddOrderRestId:(int)aRestId tel:(NSString *)aTel tableId:(NSString *)aTableId mark:(NSString *)aMark proid:(NSString *)aProId copies:(NSString *)aCopies userID:(int)aUserID statue:(NSString *)aStatue eatNumber:(int)aNumber
 {
     NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -201,7 +201,7 @@
                        <SubmitOrder xmlns=\"http://tempuri.org/\">\
                        <UserId>%d</UserId>\
                        <RestId>%d</RestId>\
-                       <TableId>%d</TableId>\
+                       <TableId>%@</TableId>\
                        <Time>%@</Time>\
                        <PeopleNum>%d</PeopleNum>\
                        <IdStr>%@</IdStr>\
@@ -211,7 +211,7 @@
                        </SubmitOrder>\
                        </soap:Body>\
                        </soap:Envelope>",aUserID,aRestId,aTableId,dateStr,aNumber,aProId,aCopies,aMark,aStatue];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];  //192.168.1.100
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/SubmitOrder"];
@@ -233,7 +233,7 @@
                        </EditOrderInfo>\
                        </soap:Body>\
                        </soap:Envelope>",aOrderId,aIdStr,aCopies];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/EditOrderInfo"];
@@ -255,7 +255,7 @@
                        </EditTableNum>\
                        </soap:Body>\
                        </soap:Envelope>",aOrderId,aTableId,aOldTableId];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/EditTableNum"];
@@ -263,7 +263,7 @@
     return request;
 }
 
-+(ASIHTTPRequest *)AddishesRestID:(int)aRestID OrderID:(int)aOrderId proid:(NSString *)aProid mark:(NSString *)aMark copies:(NSString *)aCopies
++(ASIHTTPRequest *)AddishesRestID:(int)aRestID OrderID:(int)aOrderId proid:(NSString *)aProid mark:(NSString *)aMark copies:(NSString *)aCopies andTableId:(int)aTableId
 {
     ASIHTTPRequest *request=[TKHttpRequest RequestTKUrl:ADD_DISHES];
     NSString *postStr=[NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?>\
@@ -275,10 +275,11 @@
                        <ProId>%@</ProId>\
                        <Mark>%@</Mark>\
                        <Copies>%@</Copies>\
+                       <TableId>%d</TableId>\
                        </addOrderinfo>\
                        </soap:Body>\
-                       </soap:Envelope>",aRestID,aOrderId,aProid,aMark,aCopies];
-    [request addRequestHeader:@"Host" value:@"interface.hcgjzs.com"];
+                       </soap:Envelope>",aRestID,aOrderId,aProid,aMark,aCopies,aTableId];
+    [request addRequestHeader:@"Host" value:@"192.168.1.100"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
     [request addRequestHeader:@"SOAPAction" value:@"http://tempuri.org/addOrderinfo"];

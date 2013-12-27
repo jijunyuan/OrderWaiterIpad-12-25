@@ -241,9 +241,10 @@
                        <soap:Body>\
                        <getOrderInfo xmlns=\"http://tempuri.org/\">\
                        <OrderId>%d</OrderId>\
+                        <TableId>%d</TableId>\
                        </getOrderInfo>\
                        </soap:Body>\
-                       </soap:Envelope>",[[self.check_ary valueForKey:@"Id"] intValue]];
+                       </soap:Envelope>",[[self.check_ary valueForKey:@"Id"] intValue],[[self.check_ary valueForKey:@"TableId"] intValue]];
     [request addRequestHeader:@"Host" value:@"dmd.tiankong360.com"];
     [request addRequestHeader:@"Content-Type" value:@"text/xml; charset=utf-8"];
     [request addRequestHeader:@"Content-Length" value:[NSString stringWithFormat:@"%d",postStr.length]];
@@ -397,6 +398,10 @@
           shouldDismissVisiblePopover:(FPPopoverController*)visiblePopoverController
 {
     [visiblePopoverController dismissPopoverAnimated:YES];
+}
+-(void)backBtn_click
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 - (void)didReceiveMemoryWarning
 {

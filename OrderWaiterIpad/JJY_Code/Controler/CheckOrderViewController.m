@@ -14,6 +14,10 @@
 #import "FPPopoverController.h"
 #import "PersonList.h"
 #import "Detail_DishesViewController.h"
+#import "AddMainViewController.h"
+
+
+#import "MainViewController.h"
 #define TYPE_NAME @"typename"
 #define NUMBER @"number"
 @interface CheckOrderViewController ()<UIAlertViewDelegate>
@@ -25,7 +29,7 @@
     NSString *table_id;
     UIAlertView *alert5;
 }
-@property (nonatomic,strong) NSMutableArray * dataArr;
+//@property (nonatomic,strong) NSMutableArray * dataArr;
 @property (nonatomic,strong) IBOutlet UILabel * L_price;
 @property (nonatomic,strong) IBOutlet UITableView * TV_myTableview;
 @property (nonatomic,strong) IBOutlet UIButton * Btn_sumbit;
@@ -87,209 +91,212 @@
     UIView *view1 =[ [UIView alloc]init];
     view1.backgroundColor = [UIColor clearColor];
     [self.TV_myTableview setTableFooterView:view1];
-    
-    NSMutableArray * dataArr1 = [DataBase SelectAllTypeNameAndTypeID];
-    self.arrStatus = dataArr1;
-    UIScrollView * scroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 44, 1024, 44)];
-    scroll.bounces = NO;
-    scroll.maximumZoomScale = 1.0;
-    scroll.minimumZoomScale = 1.0;
-    scroll.backgroundColor = [UIColor grayColor];
-    
-    if (dataArr1.count<=4)
-    {
-        scroll.contentSize = CGSizeMake(1024, 44);
-    }
-    else
-    {
-        scroll.contentSize = CGSizeMake(dataArr1.count*256, 44);
-    }
-    
-    for (int i = 0; i<dataArr1.count; i++)
-    {
-        if (dataArr1.count>3)
-        {
-            UIView * bgView = [[UIView alloc] init];
-            UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
-            [bgView addGestureRecognizer:tap];
-            bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
-            if (i == 0)
-            {
-                bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题.png"]];
-            }
-            else
-            {
-                bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题1.png"]];
-            }
-            
-            bgView.frame = CGRectMake(i*256, 0, 256, 44);
-            
-            UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 150, 44)];
-            lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
-            lable1.backgroundColor = [UIColor clearColor];
-            lable1.numberOfLines = 2;
-            lable1.font = [UIFont systemFontOfSize:15];
-            lable1.textAlignment = NSTextAlignmentCenter;
-            [bgView addSubview:lable1];
-            
-            DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(150, 7, 90, 30)];
-            swich.tag = 1050+i;
-            swich.on = YES;
-            swich.onText = @"即起";
-            swich.offText = @"叫起";
-            swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
-            [bgView addSubview:swich];
-            [scroll addSubview:bgView];
-            if (self.isAddDishes)
-            {
-                swich.userInteractionEnabled = NO;
-            }
-        }
-        else
-        {
-            if (dataArr1.count == 1)
-            {
-                UIView * bgView = [[UIView alloc] init];
-                UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
-                [bgView addGestureRecognizer:tap];
-                bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
-                bgView.frame = CGRectMake(0, 0, 1024, 44);
-                bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题4.png"]];
-                
-                UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(235, 0, 550, 44)];
-                lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
-                lable1.backgroundColor = [UIColor clearColor];
-                lable1.numberOfLines = 2;
-                lable1.font = [UIFont systemFontOfSize:15];
-                lable1.textAlignment = NSTextAlignmentCenter;
-                [bgView addSubview:lable1];
-                
-                DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(912, 7, 90, 30)];
-                swich.tag = 1050+i;
-                swich.on = YES;
-                swich.onText = @"即起";
-                swich.offText = @"叫起";
-                swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
-                [bgView addSubview:swich];
-                [scroll addSubview:bgView];
-                if (self.isAddDishes)
-                {
-                    swich.userInteractionEnabled = NO;
-                }
-            }
-            if (dataArr1.count == 2)
-            {
-                UIView * bgView = [[UIView alloc] init];
-                UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
-                [bgView addGestureRecognizer:tap];
-                bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
-                if (i == 0)
-                {
-                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题2.png"]];
-                }
-                else
-                {
-                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题2-1.png"]];
-                }
-                
-                bgView.frame = CGRectMake(i*512, 0, 512, 44);
-                UIImageView * lineImage = [[UIImageView alloc] initWithFrame:CGRectMake(512, 0, 2, 44)];
-                lineImage.image = [UIImage imageNamed:@"审核标题线.png"];
-                [bgView addSubview:lineImage];
-                
-                
-                UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 350, 44)];
-                lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
-                lable1.backgroundColor = [UIColor clearColor];
-                lable1.numberOfLines = 2;
-                lable1.font = [UIFont systemFontOfSize:15];
-                lable1.textAlignment = NSTextAlignmentCenter;
-                [bgView addSubview:lable1];
-                
-                DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(402,7, 90, 30)];
-                swich.tag = 1050+i;
-                swich.on = YES;
-                swich.onText = @"即起";
-                swich.offText = @"叫起";
-                swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
-                [bgView addSubview:swich];
-                [scroll addSubview:bgView];
-                if (self.isAddDishes)
-                {
-                    swich.userInteractionEnabled = NO;
-                }
-            }
-            if (dataArr1.count == 3)
-            {
-                UIView * bgView = [[UIView alloc] init];
-                UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
-                [bgView addGestureRecognizer:tap];
-                bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
-                bgView.frame = CGRectMake(i*341, 0, 341.5, 44);
-                if (i == 0)
-                {
-                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题3.png"]];
-                }
-                else
-                {
-                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题3-1.png"]];
-                }
-                UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(95, 0, 150, 44)];
-                lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
-                lable1.backgroundColor = [UIColor clearColor];
-                lable1.numberOfLines = 2;
-                lable1.font = [UIFont systemFontOfSize:15];
-                lable1.textAlignment = NSTextAlignmentCenter;
-                [bgView addSubview:lable1];
-                
-                DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(230, 7, 90, 30)];
-                swich.tag = 1050+i;
-                swich.on = YES;
-                swich.onText = @"即起";
-                swich.offText = @"叫起";
-                swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
-                [bgView addSubview:swich];
-                [scroll addSubview:bgView];
-                if (self.isAddDishes)
-                {
-                    swich.userInteractionEnabled = NO;
-                }
-            }
-        }
-    }
-    [self.view addSubview:scroll];
-    arr_dotNumber = [NSMutableArray arrayWithCapacity:0];
-    //get number and name
-    for (int i = 0; i<dataArr1.count; i++)
-    {
-        NSDictionary * dic = [dataArr1 objectAtIndex:i];
-        NSMutableDictionary * dic1 = [NSMutableDictionary dictionaryWithCapacity:0];
-        [dic1 setValue:[dic valueForKey:@"typeName"] forKey:TYPE_NAME];
-        [dic1 setValue:[DataBase SelectNumberByTypeName:[dic valueForKey:@"typeName"]] forKey:NUMBER];
-        [arr_dotNumber addObject:dic1];
-    }
-    __block NSMutableString * tempStr = [NSMutableString stringWithFormat:@""];
-    __block NSString * temp;
-    [arr_dotNumber enumerateObjectsUsingBlock:^(NSDictionary * obj, NSUInteger idx, BOOL *stop) {
-        temp = [NSString stringWithFormat:@"%@个%@,",[obj valueForKey:NUMBER],[obj valueForKey:TYPE_NAME]];
-        [tempStr appendString:temp];
-    }];
-    if (tempStr.length>0)
-    {
-        self.L_zoomDishes.text = [tempStr substringToIndex:tempStr.length-1];
-    }
-    //load data
-    self.dataArr = [DataBase SelectProductByTypeID:[[dataArr1 objectAtIndex:0] valueForKey:@"typeID"]];
-    NSArray * arr = [DataBase selectAllProduct];
+//    NSMutableArray * dataArr1 = [DataBase SelectAllTypeNameAndTypeID];
+//    self.arrStatus = dataArr1;
+//    UIScrollView * scroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 44, 1024, 44)];
+//    scroll.bounces = NO;
+//    scroll.maximumZoomScale = 1.0;
+//    scroll.minimumZoomScale = 1.0;
+//    scroll.backgroundColor = [UIColor grayColor];
+//    
+//    if (dataArr1.count<=4)
+//    {
+//        scroll.contentSize = CGSizeMake(1024, 44);
+//    }
+//    else
+//    {
+//        scroll.contentSize = CGSizeMake(dataArr1.count*256, 44);
+//    }
+//    
+//    for (int i = 0; i<dataArr1.count; i++)
+//    {
+//        if (dataArr1.count>3)
+//        {
+//            UIView * bgView = [[UIView alloc] init];
+//            UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
+//            [bgView addGestureRecognizer:tap];
+//            bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
+//            if (i == 0)
+//            {
+//                bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题.png"]];
+//            }
+//            else
+//            {
+//                bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题1.png"]];
+//            }
+//            
+//            bgView.frame = CGRectMake(i*256, 0, 256, 44);
+//            
+//            UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 150, 44)];
+//            lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
+//            lable1.backgroundColor = [UIColor clearColor];
+//            lable1.numberOfLines = 2;
+//            lable1.font = [UIFont systemFontOfSize:15];
+//            lable1.textAlignment = NSTextAlignmentCenter;
+//            [bgView addSubview:lable1];
+//            
+//            DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(150, 7, 90, 30)];
+//            swich.tag = 1050+i;
+//            swich.on = YES;
+//            swich.onText = @"即起";
+//            swich.offText = @"叫起";
+//            swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+//            [bgView addSubview:swich];
+//            [scroll addSubview:bgView];
+//            if (self.isAddDishes)
+//            {
+//                swich.userInteractionEnabled = NO;
+//            }
+//        }
+//        else
+//        {
+//            if (dataArr1.count == 1)
+//            {
+//                UIView * bgView = [[UIView alloc] init];
+//                UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
+//                [bgView addGestureRecognizer:tap];
+//                bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
+//                bgView.frame = CGRectMake(0, 0, 1024, 44);
+//                bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题4.png"]];
+//                
+//                UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(235, 0, 550, 44)];
+//                lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
+//                lable1.backgroundColor = [UIColor clearColor];
+//                lable1.numberOfLines = 2;
+//                lable1.font = [UIFont systemFontOfSize:15];
+//                lable1.textAlignment = NSTextAlignmentCenter;
+//                [bgView addSubview:lable1];
+//                
+//                DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(912, 7, 90, 30)];
+//                swich.tag = 1050+i;
+//                swich.on = YES;
+//                swich.onText = @"即起";
+//                swich.offText = @"叫起";
+//                swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+//                [bgView addSubview:swich];
+//                [scroll addSubview:bgView];
+//                if (self.isAddDishes)
+//                {
+//                    swich.userInteractionEnabled = NO;
+//                }
+//            }
+//            if (dataArr1.count == 2)
+//            {
+//                UIView * bgView = [[UIView alloc] init];
+//                UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
+//                [bgView addGestureRecognizer:tap];
+//                bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
+//                if (i == 0)
+//                {
+//                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题2.png"]];
+//                }
+//                else
+//                {
+//                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题2-1.png"]];
+//                }
+//                
+//                bgView.frame = CGRectMake(i*512, 0, 512, 44);
+//                UIImageView * lineImage = [[UIImageView alloc] initWithFrame:CGRectMake(512, 0, 2, 44)];
+//                lineImage.image = [UIImage imageNamed:@"审核标题线.png"];
+//                [bgView addSubview:lineImage];
+//                
+//                
+//                UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 350, 44)];
+//                lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
+//                lable1.backgroundColor = [UIColor clearColor];
+//                lable1.numberOfLines = 2;
+//                lable1.font = [UIFont systemFontOfSize:15];
+//                lable1.textAlignment = NSTextAlignmentCenter;
+//                [bgView addSubview:lable1];
+//                
+//                DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(402,7, 90, 30)];
+//                swich.tag = 1050+i;
+//                swich.on = YES;
+//                swich.onText = @"即起";
+//                swich.offText = @"叫起";
+//                swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+//                [bgView addSubview:swich];
+//                [scroll addSubview:bgView];
+//                if (self.isAddDishes)
+//                {
+//                    swich.userInteractionEnabled = NO;
+//                }
+//            }
+//            if (dataArr1.count == 3)
+//            {
+//                UIView * bgView = [[UIView alloc] init];
+//                UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(getClassProduct:)];
+//                [bgView addGestureRecognizer:tap];
+//                bgView.tag = 100+[[[dataArr1 objectAtIndex:i] valueForKey:@"typeID"] intValue];
+//                bgView.frame = CGRectMake(i*341, 0, 341.5, 44);
+//                if (i == 0)
+//                {
+//                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题3.png"]];
+//                }
+//                else
+//                {
+//                    bgView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"核对标题3-1.png"]];
+//                }
+//                UILabel * lable1 = [[UILabel alloc] initWithFrame:CGRectMake(95, 0, 150, 44)];
+//                lable1.text = [[dataArr1 objectAtIndex:i] valueForKey:@"typeName"];
+//                lable1.backgroundColor = [UIColor clearColor];
+//                lable1.numberOfLines = 2;
+//                lable1.font = [UIFont systemFontOfSize:15];
+//                lable1.textAlignment = NSTextAlignmentCenter;
+//                [bgView addSubview:lable1];
+//                
+//                DCRoundSwitch * swich = [[DCRoundSwitch alloc] initWithFrame:CGRectMake(230, 7, 90, 30)];
+//                swich.tag = 1050+i;
+//                swich.on = YES;
+//                swich.onText = @"即起";
+//                swich.offText = @"叫起";
+//                swich.onTintColor = [UIColor colorWithRed:251.0/255.0 green:33.0/255.0 blue:47.0/255.0 alpha:1.0];
+//                [bgView addSubview:swich];
+//                [scroll addSubview:bgView];
+//                if (self.isAddDishes)
+//                {
+//                    swich.userInteractionEnabled = NO;
+//                }
+//            }
+//        }
+//    }
+//    [self.view addSubview:scroll];
+//    arr_dotNumber = [NSMutableArray arrayWithCapacity:0];
+//    //get number and name
+//    for (int i = 0; i<dataArr1.count; i++)
+//    {
+//        NSDictionary * dic = [dataArr1 objectAtIndex:i];
+//        NSMutableDictionary * dic1 = [NSMutableDictionary dictionaryWithCapacity:0];
+//        [dic1 setValue:[dic valueForKey:@"typeName"] forKey:TYPE_NAME];
+//        [dic1 setValue:[DataBase SelectNumberByTypeName:[dic valueForKey:@"typeName"]] forKey:NUMBER];
+//        [arr_dotNumber addObject:dic1];
+//    }
+//    __block NSMutableString * tempStr = [NSMutableString stringWithFormat:@""];
+//    __block NSString * temp;
+//    [arr_dotNumber enumerateObjectsUsingBlock:^(NSDictionary * obj, NSUInteger idx, BOOL *stop) {
+//        temp = [NSString stringWithFormat:@"%@个%@,",[obj valueForKey:NUMBER],[obj valueForKey:TYPE_NAME]];
+//        [tempStr appendString:temp];
+//    }];
+//    if (tempStr.length>0)
+//    {
+//        self.L_zoomDishes.text = [tempStr substringToIndex:tempStr.length-1];
+//    }
+    self.L_zoomDishes.text=[NSString stringWithFormat:@"共有%d个菜",[self.dataArr count]];
+//    //load data
+//    self.dataArr = [DataBase SelectProductByTypeID:[[dataArr1 objectAtIndex:0] valueForKey:@"typeID"]];
+//    NSArray * arr = [DataBase selectAllProduct];
     __block double sum = 0;
+    __block double sum2=0;
     __block int num = 0;
-    [arr enumerateObjectsUsingBlock:^(NSDictionary * obj, NSUInteger idx, BOOL *stop) {
+    [self.dataArr enumerateObjectsUsingBlock:^(NSDictionary * obj, NSUInteger idx, BOOL *stop) {
         sum += [[obj valueForKey:@"prices"] doubleValue]*[[obj valueForKey:@"number"] intValue];
+        sum2 +=[[obj valueForKey:@"prices"] doubleValue];
         num += [[obj valueForKey:@"number"] intValue];
-        self.L_price.text = [NSString stringWithFormat:@"%g元",sum];
+        self.L_price.text = [NSString stringWithFormat:@"%g元",sum2];
     }];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(popDismiss_table:) name:@"popoverVC_table" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(popDismiss_person:) name:@"popoverVC_person" object:nil];
+    self.DC_mark=[[NSMutableDictionary alloc] init];
 }
 -(void)getClassProduct:(UITapGestureRecognizer *)aTap
 {
@@ -369,15 +376,17 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.labName.text = [[self.dataArr objectAtIndex:indexPath.row] valueForKey:@"ProName"];
     cell.labPrice.text =[NSString stringWithFormat:@"￥%@",[[self.dataArr objectAtIndex:indexPath.row] valueForKey:@"prices"]];
-    cell.ClickView.dotNumber = [[[self.dataArr objectAtIndex:indexPath.row] valueForKey:@"number"] intValue];
-    [cell.ClickView initView:[[[self.dataArr objectAtIndex:indexPath.row] valueForKey:@"number"] intValue]];
+//    cell.ClickView.dotNumber = [[[self.dataArr objectAtIndex:indexPath.row] valueForKey:@"number"] intValue];
+    cell.ClickView.dotNumber=1;
+//    [cell.ClickView initView:[[[self.dataArr objectAtIndex:indexPath.row] valueForKey:@"number"] intValue]];
+    [cell.ClickView initView:1];
     cell.ClickView.index = indexPath.row;
     [cell.ClickView.rightButton addTarget:self action:@selector(rightButtonClickEvent:) forControlEvents:UIControlEventTouchUpInside];
     [cell.ClickView.leftButton addTarget:self action:@selector(leftButtonClickEvent:) forControlEvents:UIControlEventTouchUpInside];
     
     NSString * curridStr = [NSString stringWithFormat:@"%@",[[self.dataArr objectAtIndex:indexPath.row] valueForKey:@"ProID"]];
     NSString * content = [self.DC_mark valueForKey:curridStr];
-
+   
     if (content.length>0)
     {
        cell.L_mark.text = [NSString stringWithFormat:@"备注:%@",content];
@@ -415,6 +424,7 @@
 #pragma mark - 点菜触发事件
 -(void)leftButtonClickEvent:(UIButton *)aButton
 {
+
     CheckCell * cell = (CheckCell *)[[[aButton superview] superview] superview];
     NSDictionary * obj = [self.dataArr objectAtIndex:cell.ClickView.index];
     if (cell.ClickView.dotNumber == 0)
@@ -480,10 +490,25 @@
             [self.TF_peopleNum resignFirstResponder];
             [self.TF_tableNum resignFirstResponder];
             
-            NSString * proidStr = [DataBase selectAllProId];
-            NSString * copiesStr = [DataBase selectNumber];
+            NSMutableString *muStar=[[NSMutableString alloc] init];
+            NSMutableString *muStarNum=[[NSMutableString alloc] init];
+            NSMutableArray  *arr_id=[[NSMutableArray alloc] init];
+            for (int p=0; p<self.dataArr.count; p++)
+            {
+                NSString * curridStr = [NSString stringWithFormat:@"%@,",[[self.dataArr objectAtIndex:p] valueForKey:@"ProID"]];
+                [muStar appendString:curridStr];
+                NSString * curridStr2 = [NSString stringWithFormat:@"%@,",@"1"];
+                [muStarNum appendString:curridStr2];
+                [arr_id addObject:[[self.dataArr objectAtIndex:p] valueForKey:@"ProID"]];
+            }
+            NSString * proidStr = [muStar substringWithRange:NSMakeRange(0, muStar.length-1)];
+            NSString * copiesStr = [muStarNum substringWithRange:NSMakeRange(0, muStarNum.length-1)];
+            NSLog(@"-- po=%@,cop=%@",proidStr,copiesStr);
+//            NSString * proidStr = [DataBase selectAllProId];
+//            NSString * copiesStr = [DataBase selectNumber];
             //mark
-            NSMutableArray * arr_id = [DataBase selectAllArrayProId];
+//            NSMutableArray * arr_id = [DataBase selectAllArrayProId];
+            
             NSMutableString * str_mutable = [NSMutableString stringWithFormat:@""];
             __block NSString * tempStr;
             [arr_id enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL *stop) {
@@ -500,21 +525,22 @@
             
             //status format classid,1;classdid,0
             NSMutableArray * tempArr = [NSMutableArray arrayWithCapacity:0];
-            for (int i = 0; i<self.arrStatus.count; i++)
-            {
-                DCRoundSwitch * swich = (DCRoundSwitch *)[self.view viewWithTag:1050+i];
-                NSString * str = [NSString stringWithFormat:@"%d",swich.on];
-                [tempArr addObject:str];
-            }
+//            for (int i = 0; i<self.arrStatus.count; i++)
+//            {
+//                DCRoundSwitch * swich = (DCRoundSwitch *)[self.view viewWithTag:1050+i];
+//                NSString * str = [NSString stringWithFormat:@"%d",swich.on];
+//                [tempArr addObject:str];
+//            }
             
-            __block NSMutableString * class_status = [NSMutableString stringWithFormat:@""];
-            [self.arrStatus enumerateObjectsUsingBlock:^(NSDictionary * obj, NSUInteger idx, BOOL *stop) {
-                ;
-                [class_status appendFormat:@"%@,%@;",[obj valueForKey:@"typeID"],[tempArr objectAtIndex:idx]];
-            }];
-            NSString * statusSTr = [class_status substringToIndex:class_status.length-1];
-            NSLog(@"restid = %@,tableid = %@,mark = %@,copies = %@,proid = %@,userid = %@,eatnu = %d,status = %@",[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID],table_id,[str_mutable substringToIndex:str_mutable.length-1],copiesStr,proidStr,[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_USERID],[self.TF_peopleNum.text intValue],statusSTr);
-            ASIHTTPRequest * request = [WebService AddOrderRestId:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID] intValue] tel:self.contact tableId:[table_id intValue] mark:[str_mutable substringToIndex:str_mutable.length-1] proid:proidStr copies:copiesStr userID:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_USERID] intValue] statue:statusSTr eatNumber:[self.TF_peopleNum.text intValue]];
+//            __block NSMutableString * class_status = [NSMutableString stringWithFormat:@""];
+//            [self.arrStatus enumerateObjectsUsingBlock:^(NSDictionary * obj, NSUInteger idx, BOOL *stop) {
+//                ;
+//                [class_status appendFormat:@"%@,%@;",[obj valueForKey:@"typeID"],[tempArr objectAtIndex:idx]];
+//            }];
+//            NSString * statusSTr = [class_status substringToIndex:class_status.length-1];
+//            NSLog(@"status=%@",statusSTr);
+            NSLog(@"restid = %@,tableid = %@,mark = %@,copies = %@,proid = %@,userid = %@,eatnu = %d,status = %@",[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID],table_id,[str_mutable substringToIndex:str_mutable.length-1],copiesStr,proidStr,[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_USERID],[self.TF_peopleNum.text intValue],copiesStr);
+            ASIHTTPRequest * request = [WebService AddOrderRestId:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID] intValue] tel:self.contact tableId:table_id mark:[str_mutable substringToIndex:str_mutable.length-1] proid:proidStr copies:copiesStr userID:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_USERID] intValue] statue:copiesStr eatNumber:[self.TF_peopleNum.text intValue]];
             [request startAsynchronous];
             [request setStartedBlock:^{
                 [MyActivceView startAnimatedInView:self.view];
@@ -523,9 +549,10 @@
             [request setDataReceivedBlock:^(NSData *data) {
                 [reciveData appendData:data];
             }];
-            __block UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"" message:@"提交成功！" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+            __block UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"温馨提醒" message:@"提交成功！" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
             alert.tag = 5555;
-            [alert show];
+
+           
             
             [request setCompletionBlock:^{
                 [MyActivceView stopAnimatedInView:self.view];
@@ -539,7 +566,7 @@
                     
                     for (UIViewController * viewController in self.navigationController.viewControllers)
                     {
-                        if ([viewController isKindOfClass:[Detail_DishesViewController class]])
+                        if ([viewController isKindOfClass:[MainViewController class]])
                         {
                             [self.navigationController popToViewController:viewController animated:YES];
                         }
@@ -579,7 +606,7 @@
             }
         }];
         NSLog(@"%d:%d:%@:%@:%@",[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID] intValue],self.orderId,proidStr,[str_mutable substringToIndex:str_mutable.length-1],copiesStr);
-        ASIHTTPRequest * request = [WebService AddishesRestID:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID] intValue] OrderID:self.orderId proid:proidStr mark:[str_mutable substringToIndex:str_mutable.length-1] copies:copiesStr];
+        ASIHTTPRequest * request = [WebService AddishesRestID:[[[NSUserDefaults standardUserDefaults] valueForKey:KEY_CURR_RESTID] intValue] OrderID:self.orderId proid:proidStr mark:[str_mutable substringToIndex:str_mutable.length-1] copies:copiesStr andTableId:[NSString stringWithFormat:@"%d",self.tableNum]];
         [request startAsynchronous];
         [request setStartedBlock:^{
             [MyActivceView startAnimatedInView:self.view];
@@ -596,10 +623,14 @@
             if ([result isEqualToString:@"1"])
             {
                 [DataBase clearOrderMenu];
-                alert5 = [[UIAlertView alloc] initWithTitle:@"" message:@"提交成功！" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+                alert5 = [[UIAlertView alloc] initWithTitle:@"温馨提醒" message:@"提交成功！" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
                 alert5.tag=1234;
                 [alert5 show];
                 [self.DC_mark removeAllObjects];
+                
+//                AddMainViewController * addMain = [[AddMainViewController alloc] init];
+//                [self.navigationController pushViewController:addMain animated:YES];
+                
                 for (UIViewController * viewController in self.navigationController.viewControllers)
                 {
                     if ([viewController isKindOfClass:[Detail_DishesViewController class]])
@@ -622,24 +653,34 @@
 -(void)addMark:(UIButton *)aButton
 {
     currClickId = aButton.tag-1000;
-    CheckCell * cell =  (CheckCell *)[[aButton superview] superview];
-    if (cell.ClickView.dotNumber>0)
-    {
-        UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"备注" message:@"" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
-        alert.alertViewStyle=UIAlertViewStylePlainTextInput;
-        [alert show];
-    }
-    else
-    {
-        [MyAlert ShowAlertMessage:@"您还未点此菜！" title:@"提示"];
-    }
+    UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"备注" message:@"" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+    alert.alertViewStyle=UIAlertViewStylePlainTextInput;
+    [alert show];
+//    CheckCell * cell =  (CheckCell *)[[aButton superview] superview];
+//    if (cell.ClickView.dotNumber>0)
+//    {
+//        UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"备注" message:@"" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+//        alert.alertViewStyle=UIAlertViewStylePlainTextInput;
+//        [alert show];
+//    }
+//    else
+//    {
+//        [MyAlert ShowAlertMessage:@"您还未点此菜！" title:@"提示"];
+//    }
 }
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    NSLog(@"000-=== %d",buttonIndex);
     if (alertView.tag==5555)
     {
+        NSLog(@"111111111111111111");
         [self.navigationController popViewControllerAnimated:YES];
         
+    }
+    if (alertView.tag==1234)
+    {
+        NSLog(@"0..0.0.0.0.0..0000000......0000000");
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
     if (alertView.tag == 1023)
     {
@@ -655,21 +696,23 @@
     else
     {
         UITextField *TF_mark=[alertView textFieldAtIndex:0];
+       
         if (buttonIndex==1)
         {
             if (TF_mark.text.length>0)
             {
                 [self.DC_mark setValue:TF_mark.text forKey:[NSString stringWithFormat:@"%d",currClickId]];
                 UIButton * markBtn = (UIButton *)[self.view viewWithTag:1000+currClickId];
-                [markBtn setBackgroundImage:[UIImage imageNamed:@"备注3.png"] forState:UIControlStateNormal];
+                [markBtn setImage:[UIImage imageNamed:@"备注3.png"] forState:UIControlStateNormal];
             }
             else
             {
                 [self.DC_mark setValue:TF_mark.text forKey:[NSString stringWithFormat:@"%d",currClickId]];
                 UIButton * markBtn = (UIButton *)[self.view viewWithTag:1000+currClickId];
-                [markBtn setBackgroundImage:[UIImage imageNamed:@"备注.png"] forState:UIControlStateNormal];
+                [markBtn setImage:[UIImage imageNamed:@"备注.png"] forState:UIControlStateNormal];
             }
             [self.TV_myTableview reloadData];
+             NSLog(@"-=-=-=-- %@",self.DC_mark);
         }  
     }
 }
@@ -680,20 +723,20 @@
     UITextField *TF_mark1=[alertView textFieldAtIndex:0];
     TF_mark1.text = content;
 }
--(void)backBtn_click
-{
-    for (UIViewController * controller in self.navigationController.viewControllers)
-    {
-        if ([controller isKindOfClass:[Detail_DishesViewController class]])
-        {
-            Detail_DishesViewController * controller1 = (Detail_DishesViewController *)controller;
-           // [controller1.DC_mark removeAllObjects];
-            //[self.DC_mark removeAllObjects];
-            [self.navigationController popToViewController:controller1 animated:YES];
-            break;
-        }
-    }
-}
+//-(void)backBtn_click
+//{
+//    for (UIViewController * controller in self.navigationController.viewControllers)
+//    {
+//        if ([controller isKindOfClass:[Detail_DishesViewController class]])
+//        {
+//            Detail_DishesViewController * controller1 = (Detail_DishesViewController *)controller;
+//           // [controller1.DC_mark removeAllObjects];
+//            //[self.DC_mark removeAllObjects];
+//            [self.navigationController popToViewController:controller1 animated:YES];
+//            break;
+//        }
+//    }
+//}
 -(void)changeNumber
 {
     NSMutableArray * dataArr1 = [DataBase SelectAllTypeNameAndTypeID];

@@ -13,4 +13,6 @@
 @property (nonatomic,strong) UISearchBar * mySarchBar;
 @property (nonatomic,strong) UIButton * standBtn;
 @property (nonatomic,strong) UIButton * selfBtn;
+
+@property (nonatomic,strong) UIImageView * lineView;
 @end

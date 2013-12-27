@@ -7,11 +7,12 @@
 //
 
 #import "BaseViewController.h"
-@interface CheckOrderViewController : BaseViewController
+@interface CheckOrderViewController : BaseViewController<UIAlertViewDelegate>
 @property (nonatomic,strong) NSString * contact;
 @property (nonatomic,strong) NSString * mark;
 @property (nonatomic) int tableNum;
 @property (nonatomic,strong) NSMutableDictionary * DC_mark;
 @property (nonatomic)BOOL isAddDishes;
 @property (nonatomic) int orderId;
+@property (nonatomic,strong) NSMutableArray * dataArr;
 @end

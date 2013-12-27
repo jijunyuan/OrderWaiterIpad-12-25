@@ -164,10 +164,40 @@
 - (void)popDismiss_table:(NSNotification *)aNotification
 {
     NSDictionary * dic = aNotification.userInfo;
-    self.TF_dishesNum.text=[NSString stringWithFormat:@"%@",[dic objectForKey:@"tableId"]];
-    self.tableId =[NSString stringWithFormat:@"%@",[dic objectForKey:@"table_Id"]];
+    NSArray * allValues = [dic allValues];
+    NSMutableString * mutableStr = [NSMutableString stringWithFormat:@""];
+    [allValues enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL *stop) {
+        [mutableStr appendFormat:@"%@,",obj];
+    }];
+    
+    
+   // self.TF_dishesNum.text=[NSString stringWithFormat:@"%@",[dic objectForKey:@"tableId"]];
+    if (mutableStr.length>1)
+    {
+         self.TF_dishesNum.text=[NSString stringWithFormat:@"%@",[mutableStr substringToIndex:mutableStr.length-1]];
+    }
+    else
+    {
+       self.TF_dishesNum.text = @"";
+    }
+    
+    NSArray * allids = [dic allKeys];
+    NSLog(@"allids = %@",allids);
+    NSMutableString * mutableId = [NSMutableString stringWithFormat:@","];
+    [allids enumerateObjectsUsingBlock:^(NSString * obj, NSUInteger idx, BOOL *stop) {
+        [mutableId appendFormat:@"%@,",obj];
+    }];
+    if (mutableId.length>1)
+    {
+      self.tableId =[NSString stringWithFormat:@"%@",mutableId];
+    }
+    else
+    {
+      self.tableId = @"";
+    }
+   
      NSLog(@"self.tableId**%@******",self.tableId);
-    [popover dismissPopoverAnimated:YES];
+  //  [popover dismissPopoverAnimated:YES];
     
 }
 - (void)popDismiss_person:(NSNotification *)aNotification

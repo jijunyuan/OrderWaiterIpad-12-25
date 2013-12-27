@@ -22,4 +22,6 @@
 @property(nonatomic,retain)UIButton    *backBtn;
 @property(nonatomic,retain)UIImageView *navImage;
 @property (nonatomic,strong) UIImageView * bgImageView;
+
+-(void)backBtn_click;
 @end

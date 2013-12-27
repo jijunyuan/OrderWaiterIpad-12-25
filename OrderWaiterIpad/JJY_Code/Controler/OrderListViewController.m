@@ -252,6 +252,7 @@
         checkVC.check_ary=[self.dataArr objectAtIndex:indexPath.row];
         [self.navigationController pushViewController:checkVC animated:YES];
     }
+    NSLog(@"%@",[self.dataArr objectAtIndex:indexPath.row]);
 }
 
 -(void)searchClick:(id)sender
