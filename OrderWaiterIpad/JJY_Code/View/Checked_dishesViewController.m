@@ -35,8 +35,12 @@
     }
     return self;
 }
+<<<<<<< HEAD
 //-----------000
 //00000000000
+=======
+// test jjy - add
+>>>>>>> cbeda8c941b528c691afa19d306b2f972d8bda3f
 - (void)viewDidLoad
 {
     [super viewDidLoad];
